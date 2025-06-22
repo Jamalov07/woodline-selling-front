@@ -92,3 +92,9 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.sidebar-menu-button svg,
+.sidebar-menu-sub-button svg {
+  width: 16px !important; 
+  height: 16px !important;
+}

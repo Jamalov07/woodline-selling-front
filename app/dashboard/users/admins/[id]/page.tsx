@@ -10,6 +10,7 @@ import { apiService, type User } from "@/lib/api"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import { useParams } from "next/navigation"
+import { formatPhoneForDisplay } from "@/utils/phone-formatter"
 
 export default function AdminDetailPage() {
   const [user, setUser] = useState<User | null>(null)
@@ -122,7 +123,7 @@ export default function AdminDetailPage() {
               </div>
               <div>
                 <Label className="text-sm font-medium">Telefon raqam</Label>
-                <p className="text-lg">{user.phone}</p>
+                <p className="text-lg">{formatPhoneForDisplay(user.phone)}</p>
               </div>
               {user.source && (
                 <div>

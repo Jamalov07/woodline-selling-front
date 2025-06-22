@@ -491,7 +491,7 @@ export default function ClientsPage() {
                     </div>
                     {showClientField && (
                       <div className="space-y-2">
-                        <Label htmlFor="source">Source (Instagram, Telegram, Chrome...)</Label>
+                        <Label htmlFor="source">Source</Label>
                         <Input
                           id="source"
                           placeholder="Mijoz qayerdan kelgani (masalan: Instagram)"
@@ -546,8 +546,8 @@ export default function ClientsPage() {
             </Dialog>
           </div>
 
-          <div className="flex-1 table-with-borders">
-            <Table>
+          <div className="flex-1 table-container">
+            <Table className="table-with-borders">
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[100px]">№</TableHead>

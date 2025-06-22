@@ -294,7 +294,8 @@ export default function WarehousePage() {
             </Dialog>
           </div>
 
-          <Table>
+          <div className="flex-1 table-container">
+            <Table className="table-with-borders">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[100px]">№</TableHead>
@@ -353,7 +354,8 @@ export default function WarehousePage() {
                 ))
               )}
             </TableBody>
-          </Table>
+            </Table>
+          </div>
 
           {/* Pagination and Page Size Controls */}
           <div className="flex items-center justify-between mt-4">

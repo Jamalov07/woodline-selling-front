@@ -1,4 +1,4 @@
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL || 'http://127.0.0.1:3000';
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL || "http://127.0.0.1:3000";
 
 interface ApiResponse<T = any> {
     data: T;
@@ -357,6 +357,7 @@ class ApiService {
             pageSize?: number;
             search?: string;
             pagination?: boolean;
+            name?: string;
         } = {}
     ): Promise<ApiResponse<FurnitureTypeListResponse>> {
         const searchParams = new URLSearchParams();
