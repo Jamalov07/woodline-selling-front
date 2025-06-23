@@ -29,12 +29,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Label } from "@/components/ui/label"
-import { Plus, Edit, Trash2, Search, ChevronLeft, ChevronRight, Eye } from "lucide-react"
+import { Plus, Edit, Trash2, Search, ChevronLeft, ChevronRight, Eye, Loader2 } from "lucide-react"
 import { apiService, type User, type Storehouse } from "@/lib/api"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import { RoleActionTreeSelect } from "@/components/role-action-tree-select"
-import { formatPhoneForDisplay, getPhoneForBackend, handlePhoneInputChange } from "@/utils/phone-formatter"
+import { formatPhoneForDisplay, formatPhoneInput, getPhoneForBackend, handlePhoneInputChange, normalizePhoneForBackend, validatePhone } from "@/utils/phone-formatter"
+import { usePhoneValidation } from "@/hooks/use-phone-validation"
 
 export default function SellersPage() {
   const [users, setUsers] = useState<User[]>([])
@@ -62,6 +63,11 @@ export default function SellersPage() {
   const { toast } = useToast()
   const router = useRouter()
 
+  // Phone validation
+  const { isChecking, phoneError, isPhoneValid } = usePhoneValidation(
+    formData.phone.replace(/\s/g, ""),
+    editingUser?.id,
+  )
   const fetchUsers = async () => {
     try {
       setLoading(true)
@@ -134,7 +140,7 @@ export default function SellersPage() {
   }
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = handlePhoneInputChange(e.target.value, formData.phone)
+    const formatted = formatPhoneInput(e.target.value)
     setFormData({ ...formData, phone: formatted })
   }
 
@@ -149,12 +155,11 @@ export default function SellersPage() {
     }
 
     // Phone format validation
-    const phoneRegex = /^998 \d{2} \d{3} \d{2} \d{2}$/
-    if (!phoneRegex.test(formData.phone)) {
+    if (!validatePhone(formData.phone)) {
       toast({
         variant: "destructive",
         title: "Xatolik",
-        description: "Telefon raqam 998 XX XXX XX XX formatida bo'lishi kerak",
+        description: "Telefon raqam to'liq kiritilishi kerak (998 90 123 45 67)",
       })
       return
     }
@@ -170,14 +175,14 @@ export default function SellersPage() {
 
     try {
       const createData: any = {
-        phone: getPhoneForBackend(formData.phone),
+        phone: normalizePhoneForBackend(formData.phone),
         fullname: formData.fullname,
         password: formData.password,
         rolesToConnect: selectedRoles,
         actionsToConnect: selectedActions,
       }
 
-      if ((selectedRoles.includes("client") || selectedRoles.includes("seller")) && formData.source) {
+      if (selectedRoles.includes("client") && formData.source) {
         createData.source = formData.source
       }
 
@@ -229,12 +234,11 @@ export default function SellersPage() {
     }
 
     // Phone format validation
-    const phoneRegex = /^998 \d{2} \d{3} \d{2} \d{2}$/
-    if (!phoneRegex.test(formData.phone)) {
+    if (!isPhoneValid) {
       toast({
         variant: "destructive",
         title: "Xatolik",
-        description: "Telefon raqam 998 XX XXX XX XX formatida bo'lishi kerak",
+        description: phoneError || `Telefon raqam noto'g'ri`,
       })
       return
     }
@@ -249,7 +253,7 @@ export default function SellersPage() {
       const actionsToDisconnect = currentActions.filter((action) => !selectedActions.includes(action))
 
       const updateData: any = {
-        phone: getPhoneForBackend(formData.phone),
+        phone: normalizePhoneForBackend(formData.phone),
         fullname: formData.fullname,
         rolesToConnect,
         rolesToDisconnect,
@@ -261,7 +265,7 @@ export default function SellersPage() {
         updateData.password = formData.password
       }
 
-      if ((selectedRoles.includes("client") || selectedRoles.includes("seller")) && formData.source) {
+      if (selectedRoles.includes("client") && formData.source) {
         updateData.source = formData.source
       }
 
@@ -339,7 +343,7 @@ export default function SellersPage() {
   const openEditModal = (user: User) => {
     setEditingUser(user)
     setFormData({
-      phone: formatPhoneForDisplay(user.phone),
+      phone: formatPhoneInput(user.phone),
       fullname: user.fullname,
       password: "",
       source: user.source || "",
@@ -355,7 +359,6 @@ export default function SellersPage() {
   }
 
   const showClientField = selectedRoles.includes("client")
-  const showSellerField = selectedRoles.includes("seller")
   const showProviderField = selectedRoles.includes("provider")
 
   return (
@@ -432,7 +435,7 @@ export default function SellersPage() {
                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                       />
                     </div>
-                    {(showClientField || showSellerField) && (
+                    {(showClientField) && (
                       <div className="space-y-2">
                         <Label htmlFor="source">Source</Label>
                         <Input
@@ -487,7 +490,8 @@ export default function SellersPage() {
             </Dialog>
           </div>
 
-          <Table>
+        <div className="flex-1 table-container">
+          <Table className="table-with-borders">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[100px]">№</TableHead>
@@ -514,7 +518,7 @@ export default function SellersPage() {
                   <TableRow key={user.id}>
                     <TableCell className="font-medium">{(pageNumber - 1) * pageSize + index + 1}</TableCell>
                     <TableCell>{user.fullname}</TableCell>
-                    <TableCell>{user.phone}</TableCell>
+                    <TableCell>{formatPhoneForDisplay(user.phone)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end space-x-2">
                         <Button variant="outline" size="sm" onClick={() => handleViewDetails(user)}>
@@ -550,7 +554,8 @@ export default function SellersPage() {
               )}
             </TableBody>
           </Table>
-
+        </div>
+            
           {/* Pagination and Page Size Controls */}
           <div className="flex items-center justify-between mt-4">
             <div className="flex items-center space-x-2">
@@ -604,19 +609,34 @@ export default function SellersPage() {
           </DialogHeader>
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-4">
-              <div className="space-y-2">
+            <div className="space-y-2">
                 <Label htmlFor="edit-phone">Telefon raqam *</Label>
                 <Input
                   id="edit-phone"
-                  placeholder="998 XX XXX XX XX"
+                  placeholder="998 91 110 10 10"
                   value={formData.phone}
-                  onChange={handlePhoneChange}
+                  onChange={(e) => handlePhoneChange(e)}
+                  className={phoneError ? "border-red-500" : ""}
                   onKeyDown={(e) => {
-                    if (e.key === "e" || e.key === "+" || e.key === "-") {
+                    if (
+                      !/^\d$/.test(e.key) &&
+                      e.key !== "Backspace" &&
+                      e.key !== "Delete" &&
+                      e.key !== "ArrowLeft" &&
+                      e.key !== "ArrowRight" &&
+                      e.key !== "Tab"
+                    ) {
                       e.preventDefault()
                     }
                   }}
                 />
+                {isChecking && (
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                    Tekshirilmoqda...
+                  </div>
+                )}
+                {phoneError && <p className="text-sm text-red-500">{phoneError}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="edit-fullname">To'liq ism *</Label>
@@ -637,7 +657,7 @@ export default function SellersPage() {
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 />
               </div>
-              {(showClientField || showSellerField) && (
+              {(showClientField) && (
                 <div className="space-y-2">
                   <Label htmlFor="edit-source">Source</Label>
                   <Input

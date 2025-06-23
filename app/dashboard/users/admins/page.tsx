@@ -27,17 +27,18 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Label } from "@/components/ui/label"
-import { Plus, Edit, Trash2, Search, ChevronLeft, ChevronRight, Eye } from "lucide-react"
+import { Plus, Edit, Trash2, Search, ChevronLeft, ChevronRight, Eye, Loader2 } from "lucide-react"
 import { apiService, type User, type Storehouse } from "@/lib/api"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import { RoleActionTreeSelect } from "@/components/role-action-tree-select"
 import {
   formatPhoneForDisplay,
-  handlePhoneInputChange,
+  formatPhoneInput,
   normalizePhoneForBackend,
   validatePhone,
 } from "@/utils/phone-formatter"
+import { usePhoneValidation } from "@/hooks/use-phone-validation"
 
 export default function AdminsPage() {
   const [users, setUsers] = useState<User[]>([])
@@ -64,6 +65,12 @@ export default function AdminsPage() {
 
   const { toast } = useToast()
   const router = useRouter()
+
+  // Phone validation
+  const { isChecking, phoneError, isPhoneValid } = usePhoneValidation(
+    formData.phone.replace(/\s/g, ""),
+    editingUser?.id,
+  )
 
   const fetchUsers = async () => {
     try {
@@ -147,7 +154,7 @@ export default function AdminsPage() {
   }
 
   const handlePhoneChange = (value: string) => {
-    const formatted = handlePhoneInputChange(value, formData.phone)
+    const formatted = formatPhoneInput(value)
     setFormData({ ...formData, phone: formatted })
   }
 
@@ -189,7 +196,7 @@ export default function AdminsPage() {
         actionsToConnect: selectedActions,
       }
 
-      if ((selectedRoles.includes("client") || selectedRoles.includes("seller")) && formData.source) {
+      if (selectedRoles.includes("client") && formData.source) {
         createData.source = formData.source
       }
 
@@ -251,11 +258,11 @@ export default function AdminsPage() {
     }
 
     // Phone format validation
-    if (!validatePhone(formData.phone)) {
+    if (!isPhoneValid) {
       toast({
         variant: "destructive",
         title: "Xatolik",
-        description: "Telefon raqam to'liq kiritilishi kerak (998 90 123 45 67)",
+        description: phoneError || `Telefon raqam noto'g'ri`,
       })
       return
     }
@@ -282,7 +289,7 @@ export default function AdminsPage() {
         updateData.password = formData.password
       }
 
-      if ((selectedRoles.includes("client") || selectedRoles.includes("seller")) && formData.source) {
+      if (selectedRoles.includes("client") && formData.source) {
         updateData.source = formData.source
       }
 
@@ -380,7 +387,7 @@ export default function AdminsPage() {
   const openEditModal = (user: User) => {
     setEditingUser(user)
     setFormData({
-      phone: formatPhoneForDisplay(user.phone),
+      phone: formatPhoneInput(user.phone),
       fullname: user.fullname,
       password: "",
       source: user.source || "",
@@ -407,7 +414,6 @@ export default function AdminsPage() {
   }
 
   const showClientField = selectedRoles.includes("client")
-  const showSellerField = selectedRoles.includes("seller")
   const showProviderField = selectedRoles.includes("provider")
 
   return (
@@ -492,7 +498,7 @@ export default function AdminsPage() {
                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                       />
                     </div>
-                    {(showClientField || showSellerField) && (
+                    {(showClientField) && (
                       <div className="space-y-2">
                         <Label htmlFor="source">Source</Label>
                         <Input
@@ -670,23 +676,30 @@ export default function AdminsPage() {
                 <Label htmlFor="edit-phone">Telefon raqam *</Label>
                 <Input
                   id="edit-phone"
-                  placeholder="998 90 123 45 67"
+                  placeholder="998 91 110 10 10"
                   value={formData.phone}
                   onChange={(e) => handlePhoneChange(e.target.value)}
+                  className={phoneError ? "border-red-500" : ""}
                   onKeyDown={(e) => {
-                    // Prevent deletion of "998 " prefix
-                    if (e.key === "Backspace" && formData.phone.length <= 4) {
-                      e.preventDefault()
-                    }
-                    // Only allow numbers after the prefix
                     if (
-                      !/[0-9]/.test(e.key) &&
-                      !["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"].includes(e.key)
+                      !/^\d$/.test(e.key) &&
+                      e.key !== "Backspace" &&
+                      e.key !== "Delete" &&
+                      e.key !== "ArrowLeft" &&
+                      e.key !== "ArrowRight" &&
+                      e.key !== "Tab"
                     ) {
                       e.preventDefault()
                     }
                   }}
                 />
+                {isChecking && (
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                    Tekshirilmoqda...
+                  </div>
+                )}
+                {phoneError && <p className="text-sm text-red-500">{phoneError}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="edit-fullname">To'liq ism *</Label>
@@ -707,7 +720,7 @@ export default function AdminsPage() {
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 />
               </div>
-              {(showClientField || showSellerField) && (
+              {(showClientField) && (
                 <div className="space-y-2">
                   <Label htmlFor="edit-source">Source</Label>
                   <Input

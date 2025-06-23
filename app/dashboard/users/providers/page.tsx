@@ -27,7 +27,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Label } from "@/components/ui/label"
-import { Plus, Edit, Trash2, Search, ChevronLeft, ChevronRight, Eye } from "lucide-react"
+import { Plus, Edit, Trash2, Search, ChevronLeft, ChevronRight, Eye, Loader2 } from "lucide-react"
 import { apiService, type User, type Storehouse } from "@/lib/api"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
@@ -206,7 +206,7 @@ export default function ProvidersPage() {
         actionsToConnect: selectedActions,
       }
 
-      if ((selectedRoles.includes("client") || selectedRoles.includes("seller")) && formData.source) {
+      if (selectedRoles.includes("client") && formData.source) {
         createData.source = formData.source
       }
 
@@ -299,7 +299,7 @@ export default function ProvidersPage() {
         updateData.password = formData.password
       }
 
-      if ((selectedRoles.includes("client") || selectedRoles.includes("seller")) && formData.source) {
+      if (selectedRoles.includes("client") && formData.source) {
         updateData.source = formData.source
       }
 
@@ -674,14 +674,14 @@ export default function ProvidersPage() {
           </DialogHeader>
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-4">
-              <div className="space-y-2">
+            <div className="space-y-2">
                 <Label htmlFor="edit-phone">Telefon raqam *</Label>
                 <Input
                   id="edit-phone"
-                  placeholder="998901234567"
+                  placeholder="998 91 110 10 10"
                   value={formData.phone}
                   onChange={(e) => handlePhoneChange(e.target.value)}
-                  maxLength={12}
+                  className={phoneError ? "border-red-500" : ""}
                   onKeyDown={(e) => {
                     if (
                       !/^\d$/.test(e.key) &&
@@ -695,6 +695,13 @@ export default function ProvidersPage() {
                     }
                   }}
                 />
+                {isChecking && (
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                    Tekshirilmoqda...
+                  </div>
+                )}
+                {phoneError && <p className="text-sm text-red-500">{phoneError}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="edit-fullname">To'liq ism *</Label>

@@ -719,7 +719,7 @@ export default function ClientsPage() {
               </div>
               {showClientField && (
                 <div className="space-y-2">
-                  <Label htmlFor="edit-source">Source (Instagram, Telegram, Chrome...)</Label>
+                  <Label htmlFor="edit-source">Source</Label>
                   <Input
                     id="edit-source"
                     placeholder="Mijoz qayerdan kelgani (masalan: Instagram)"
