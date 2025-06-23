@@ -399,7 +399,7 @@ class ApiService {
         params: {
             pageNumber?: number;
             pageSize?: number;
-            search?: string;
+            name?: string;
             pagination?: boolean;
         } = {}
     ): Promise<ApiResponse<ModelListResponse>> {
@@ -407,7 +407,7 @@ class ApiService {
 
         if (params.pageNumber) searchParams.append("pageNumber", params.pageNumber.toString());
         if (params.pageSize) searchParams.append("pageSize", params.pageSize.toString());
-        if (params.search) searchParams.append("search", params.search);
+        if (params.name) searchParams.append("search", params.name);
         if (params.pagination !== undefined) {
             searchParams.append("pagination", params.pagination.toString());
         } else {

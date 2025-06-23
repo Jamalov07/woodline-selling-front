@@ -401,7 +401,7 @@ export default function ClientsPage() {
   const isFormValid = isPhoneValid && formData.fullname.trim() && formData.password.trim() && !isChecking
 
   return (
-    <div className="space-y-6 flex flex-col min-h-[calc(100vh-2rem)]">
+    <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Mijozlar</h1>
@@ -409,12 +409,12 @@ export default function ClientsPage() {
         </div>
       </div>
 
-      <Card className="flex-1 flex flex-col">
+      <Card>
         <CardHeader>
           <CardTitle>Mijozlar ro'yxati</CardTitle>
           <CardDescription>Barcha mijozlar va ularning ma'lumotlari</CardDescription>
         </CardHeader>
-        <CardContent className="flex-1 flex flex-col">
+        <CardContent>
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2">
               <div className="relative">

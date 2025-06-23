@@ -35,6 +35,7 @@ export default function FurnitureTypesPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
+  const [pageNumber, setPageNumber] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
 
@@ -239,13 +240,13 @@ export default function FurnitureTypesPage() {
   }
 
   return (
-    <div className="space-y-6 flex flex-col min-h-[calc(100vh-2rem)]">
+    <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Mebel turlari</h1>
         <p className="text-muted-foreground">Mebel turlari va kategoriyalarni boshqaring</p>
       </div>
 
-      <Card className="flex-1 flex flex-col">
+      <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -311,60 +312,45 @@ export default function FurnitureTypesPage() {
             </Table>
           </div>
 
-          <div className="pagination-fixed">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <p className="text-sm text-muted-foreground">
-                  Jami {totalCount} tadan {(currentPage - 1) * pageSize + 1}-
-                  {Math.min(currentPage * pageSize, totalCount)} ko'rsatilmoqda
-                </p>
-              </div>
-              <div className="flex items-center space-x-6">
-                <div className="flex items-center space-x-2">
-                  <p className="text-sm font-medium">Sahifada:</p>
-                  <Select
-                    value={pageSize.toString()}
-                    onValueChange={(value) => {
-                      setPageSize(Number(value))
-                      setCurrentPage(1)
-                    }}
-                  >
-                    <SelectTrigger className="h-8 w-[70px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent side="top">
-                      <SelectItem value="5">5</SelectItem>
-                      <SelectItem value="10">10</SelectItem>
-                      <SelectItem value="20">20</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                    disabled={currentPage <= 1}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                    Oldingi
-                  </Button>
-                  <div className="flex items-center space-x-1">
-                    <span className="text-sm font-medium">
-                      {currentPage} / {totalPages}
-                    </span>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                    disabled={currentPage >= totalPages}
-                  >
-                    Keyingi
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
+          {/* Pagination and Page Size Controls */}
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-muted-foreground">Sahifada:</span>
+              <Select value={pageSize.toString()} onValueChange={(value) => setPageSize(Number(value))}>
+                <SelectTrigger className="w-[70px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="15">15</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPageNumber(Math.max(1, pageNumber - 1))}
+                disabled={pageNumber === 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Oldingi
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                Sahifa {pageNumber} / {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPageNumber(Math.min(totalPages, pageNumber + 1))}
+                disabled={pageNumber === totalPages}
+              >
+                Keyingi
+                <ChevronRight className="h-4 w-4" />
+              </Button>
             </div>
           </div>
         </CardContent>
