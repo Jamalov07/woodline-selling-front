@@ -142,6 +142,13 @@ interface ModelListResponse {
     data: Model[];
 }
 
+interface ProductListResponse {
+    totalCount?: number;
+    pagesCount?: number;
+    pageSize?: number;
+    data: Product[];
+}
+
 class ApiService {
     private async request<T>(
         endpoint: string,
@@ -484,6 +491,76 @@ class ApiService {
         return this.request(`/model/one?id=${id}`, {
             method: "DELETE",
         });
+    }
+
+    //product
+    async getProducts(
+        params: {
+            pageNumber?: number;
+            pageSize?: number;
+            search?: string;
+            pagination?: boolean;
+        } = {}
+    ): Promise<ApiResponse<ProductListResponse>> {
+        const searchParams = new URLSearchParams();
+
+        if (params.pageNumber)
+            searchParams.append("pageNumber", params.pageNumber.toString());
+        if (params.pageSize)
+            searchParams.append("pageSize", params.pageSize.toString());
+        if (params.search) searchParams.append("search", params.search);
+        if (params.pagination !== undefined) {
+            searchParams.append("pagination", params.pagination.toString());
+        } else {
+            searchParams.append("pagination", "true");
+        }
+
+        return this.request<ProductListResponse>(
+            `/product/many?${searchParams}`
+        );
+    }
+
+    async createProduct(data: {
+        publicId: string;
+        modelId: string;
+        tissue: string;
+        quantity: number;
+        direction: "left" | "right" | "none";
+        description: string;
+        type: "standart" | "nonstandart";
+    }): Promise<ApiResponse> {
+        return this.request("/product/one", {
+            method: "POST",
+            body: JSON.stringify(data),
+        });
+    }
+
+    async updateProduct(
+        id: string,
+        data: {
+            publicId: string;
+            modelId: string;
+            tissue: string;
+            quantity: number;
+            direction: "left" | "right" | "none";
+            description: string;
+            type: "standart" | "nonstandart";
+        }
+    ): Promise<ApiResponse> {
+        return this.request(`/product/one?id=${id}`, {
+            method: "PATCH",
+            body: JSON.stringify(data),
+        });
+    }
+
+    async deleteProduct(id: string): Promise<ApiResponse> {
+        return this.request(`/product/one?id=${id}`, {
+            method: "DELETE",
+        });
+    }
+
+    async generatePublicId(): Promise<ApiResponse> {
+        return this.request("/public-id/generate", { method: "GET" });
     }
 }
 
