@@ -1,4 +1,5 @@
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL || "http://127.0.0.1:3000";
+const BASE_URL =
+    process.env.NEXT_PUBLIC_BACKEND_BASE_URL || "http://127.0.0.1:3000";
 
 interface ApiResponse<T = any> {
     data: T;
@@ -99,6 +100,13 @@ interface Model {
     };
 }
 
+interface Product {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string | null;
+}
+
 interface RoleListResponse {
     totalCount?: number;
     pagesCount?: number;
@@ -135,7 +143,10 @@ interface ModelListResponse {
 }
 
 class ApiService {
-    private async request<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
+    private async request<T>(
+        endpoint: string,
+        options: RequestInit = {}
+    ): Promise<ApiResponse<T>> {
         const token = localStorage.getItem("access_token");
 
         const response = await fetch(`${BASE_URL}${endpoint}`, {
@@ -167,22 +178,32 @@ class ApiService {
         const searchParams = new URLSearchParams();
 
         if (params.type) searchParams.append("type", params.type);
-        if (params.pageNumber) searchParams.append("pageNumber", params.pageNumber.toString());
-        if (params.pageSize) searchParams.append("pageSize", params.pageSize.toString());
+        if (params.pageNumber)
+            searchParams.append("pageNumber", params.pageNumber.toString());
+        if (params.pageSize)
+            searchParams.append("pageSize", params.pageSize.toString());
         if (params.name) searchParams.append("search", params.name);
         searchParams.append("pagination", "true");
 
-        return this.request<StorehouseListResponse>(`/storehouse/many?${searchParams}`);
+        return this.request<StorehouseListResponse>(
+            `/storehouse/many?${searchParams}`
+        );
     }
 
-    async createStorehouse(data: { name: string; type: "warehouse" | "showroom" }): Promise<ApiResponse> {
+    async createStorehouse(data: {
+        name: string;
+        type: "warehouse" | "showroom";
+    }): Promise<ApiResponse> {
         return this.request("/storehouse/one", {
             method: "POST",
             body: JSON.stringify(data),
         });
     }
 
-    async updateStorehouse(id: string, data: { name: string }): Promise<ApiResponse> {
+    async updateStorehouse(
+        id: string,
+        data: { name: string }
+    ): Promise<ApiResponse> {
         return this.request(`/storehouse/one?id=${id}`, {
             method: "PATCH",
             body: JSON.stringify(data),
@@ -206,8 +227,10 @@ class ApiService {
     ): Promise<ApiResponse<RoleListResponse>> {
         const searchParams = new URLSearchParams();
 
-        if (params.pageNumber) searchParams.append("pageNumber", params.pageNumber.toString());
-        if (params.pageSize) searchParams.append("pageSize", params.pageSize.toString());
+        if (params.pageNumber)
+            searchParams.append("pageNumber", params.pageNumber.toString());
+        if (params.pageSize)
+            searchParams.append("pageSize", params.pageSize.toString());
         if (params.name) searchParams.append("search", params.name);
         if (params.pagination !== undefined) {
             searchParams.append("pagination", params.pagination.toString());
@@ -246,8 +269,10 @@ class ApiService {
     ): Promise<ApiResponse<ActionListResponse>> {
         const searchParams = new URLSearchParams();
 
-        if (params.pageNumber) searchParams.append("pageNumber", params.pageNumber.toString());
-        if (params.pageSize) searchParams.append("pageSize", params.pageSize.toString());
+        if (params.pageNumber)
+            searchParams.append("pageNumber", params.pageNumber.toString());
+        if (params.pageSize)
+            searchParams.append("pageSize", params.pageSize.toString());
         if (params.name) searchParams.append("search", params.name);
         if (params.pagination !== undefined) {
             searchParams.append("pagination", params.pagination.toString());
@@ -289,12 +314,16 @@ class ApiService {
     ): Promise<ApiResponse<UserListResponse>> {
         const searchParams = new URLSearchParams();
 
-        if (params.pageNumber) searchParams.append("pageNumber", params.pageNumber.toString());
-        if (params.pageSize) searchParams.append("pageSize", params.pageSize.toString());
+        if (params.pageNumber)
+            searchParams.append("pageNumber", params.pageNumber.toString());
+        if (params.pageSize)
+            searchParams.append("pageSize", params.pageSize.toString());
         if (params.search) searchParams.append("search", params.search);
         if (params.phone) searchParams.append("phone", params.phone);
         if (params.roleNames && params.roleNames.length > 0) {
-            params.roleNames.forEach((role) => searchParams.append("roleNames", role));
+            params.roleNames.forEach((role) =>
+                searchParams.append("roleNames", role)
+            );
         }
         if (params.pagination !== undefined) {
             searchParams.append("pagination", params.pagination.toString());
@@ -362,8 +391,10 @@ class ApiService {
     ): Promise<ApiResponse<FurnitureTypeListResponse>> {
         const searchParams = new URLSearchParams();
 
-        if (params.pageNumber) searchParams.append("pageNumber", params.pageNumber.toString());
-        if (params.pageSize) searchParams.append("pageSize", params.pageSize.toString());
+        if (params.pageNumber)
+            searchParams.append("pageNumber", params.pageNumber.toString());
+        if (params.pageSize)
+            searchParams.append("pageSize", params.pageSize.toString());
         if (params.search) searchParams.append("search", params.search);
         if (params.pagination !== undefined) {
             searchParams.append("pagination", params.pagination.toString());
@@ -371,7 +402,9 @@ class ApiService {
             searchParams.append("pagination", "true");
         }
 
-        return this.request<FurnitureTypeListResponse>(`/furniture-type/many?${searchParams}`);
+        return this.request<FurnitureTypeListResponse>(
+            `/furniture-type/many?${searchParams}`
+        );
     }
 
     async createFurnitureType(data: { name: string }): Promise<ApiResponse> {
@@ -381,7 +414,10 @@ class ApiService {
         });
     }
 
-    async updateFurnitureType(id: string, data: { name: string }): Promise<ApiResponse> {
+    async updateFurnitureType(
+        id: string,
+        data: { name: string }
+    ): Promise<ApiResponse> {
         return this.request(`/furniture-type/one?id=${id}`, {
             method: "PATCH",
             body: JSON.stringify(data),
@@ -405,8 +441,10 @@ class ApiService {
     ): Promise<ApiResponse<ModelListResponse>> {
         const searchParams = new URLSearchParams();
 
-        if (params.pageNumber) searchParams.append("pageNumber", params.pageNumber.toString());
-        if (params.pageSize) searchParams.append("pageSize", params.pageSize.toString());
+        if (params.pageNumber)
+            searchParams.append("pageNumber", params.pageNumber.toString());
+        if (params.pageSize)
+            searchParams.append("pageSize", params.pageSize.toString());
         if (params.name) searchParams.append("search", params.name);
         if (params.pagination !== undefined) {
             searchParams.append("pagination", params.pagination.toString());
@@ -417,7 +455,11 @@ class ApiService {
         return this.request<ModelListResponse>(`/model/many?${searchParams}`);
     }
 
-    async createModel(data: { name: string; furnitureTypeId: string; providerId: string }): Promise<ApiResponse> {
+    async createModel(data: {
+        name: string;
+        furnitureTypeId: string;
+        providerId: string;
+    }): Promise<ApiResponse> {
         return this.request("/model/one", {
             method: "POST",
             body: JSON.stringify(data),
@@ -446,4 +488,13 @@ class ApiService {
 }
 
 export const apiService = new ApiService();
-export type { Storehouse, ApiResponse, Role, Action, User, FurnitureType, Model };
+export type {
+    Storehouse,
+    ApiResponse,
+    Role,
+    Action,
+    User,
+    FurnitureType,
+    Model,
+    Product,
+};
