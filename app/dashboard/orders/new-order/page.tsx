@@ -226,6 +226,10 @@ export default function NewOrderPage() {
     setModelSearch("")
     generatePublicId()
     toast({
+      title: "Muvaffaqiyat",
+      description: "Buyurtma muvaffaqiyatli qo'shildi",
+    })
+    toast({
       title: "Tozalandi",
       description: "Barcha maydonlar tozalandi",
     })

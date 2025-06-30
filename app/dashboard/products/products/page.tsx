@@ -47,6 +47,11 @@ interface ExtendedProduct extends Product {
       id: string
       name: string
     }
+    provider: {
+      id: string
+      fullname: string
+      phone: string
+    }
   }
 }
 
@@ -375,7 +380,7 @@ export default function ProductsPage() {
       {/* Products Table */}
       <Card>
         <CardContent className="p-0">
-          <Table>
+          <Table className="table-with-borders">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-16">№</TableHead>

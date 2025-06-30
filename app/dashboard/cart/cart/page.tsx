@@ -28,7 +28,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Trash2, Edit, ShoppingCart, Plus, CreditCard, MapPin, Calendar, Loader2, DollarSign } from "lucide-react"
-import { toast } from "sonner"
+import { useToast } from "../../../../hooks/use-toast"
 import { apiService, User } from "@/lib/api"
 
 interface CartItem {
@@ -116,6 +116,7 @@ interface Model {
 }
 
 export default function CartPage() {
+  const { toast } = useToast()
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [models, setModels] = useState<Model[]>([])
   const [loading, setLoading] = useState(true)
@@ -182,11 +183,19 @@ export default function CartPage() {
       if (response.success.is && response.data) {
         setCartItems(response.data.data || [])
       } else {
-        toast.error("Savat ma'lumotlarini yuklashda xatolik")
+        toast({
+          variant: "destructive",
+          title: "Xatolik",
+          description: "Savat ma'lumotlarini yuklashda xatolik",
+        })
       }
     } catch (error) {
       console.error("Load cart items error:", error)
-      toast.error("Savat ma'lumotlarini yuklashda xatolik")
+      toast({
+        variant: "destructive",
+        title: "Xatolik",
+        description: "Savat ma'lumotlarini yuklashda xatolik",
+      })
     } finally {
       setLoading(false)
     }
@@ -203,11 +212,19 @@ export default function CartPage() {
       if (response.success.is && response.data) {
         setClients(response.data.data || [])
       } else {
-        toast.error("Mijozlarni yuklashda xatolik yuz berdi")
+        toast({
+          variant: "destructive",
+          title: "Xatolik",
+          description: "Mijozlarni yuklashda xatolik yuz berdi",
+        })
       }
     } catch (error) {
       console.error("Load clients error:", error)
-      toast.error("Mijozlarni yuklashda xatolik yuz berdi")
+      toast({
+        variant: "destructive",
+        title: "Xatolik",
+        description: "Mijozlarni yuklashda xatolik yuz berdi",
+      })
     } finally {
       setIsLoadingClients(false)
     }
@@ -286,16 +303,27 @@ export default function CartPage() {
       const response = await apiService.updateCart(editingItem.id, updateData)
 
       if (response.success.is) {
-        toast.success("Savat elementi muvaffaqiyatli yangilandi")
+        toast({
+          title: "Muvaffaqiyat",
+          description: "Savat elementi muvaffaqiyatli yangilandi",
+        })
         setEditModalOpen(false)
         setEditingItem(null)
         loadCartItems()
       } else {
-        toast.error("Yangilashda xatolik yuz berdi")
+        toast({
+          variant: "destructive",
+          title: "Xatolik",
+          description: "Yangilashda xatolik yuz berdi",
+        })
       }
     } catch (error) {
       console.error("Update cart item error:", error)
-      toast.error("Yangilashda xatolik yuz berdi")
+      toast({
+        variant: "destructive",
+        title: "Xatolik",
+        description: "Yangilashda xatolik yuz berdi",
+      })
     }
   }
 
@@ -303,21 +331,36 @@ export default function CartPage() {
     try {
       const response = await apiService.deleteCart(deleteModal.cartId)
       if (response.success.is) {
-        toast.success("Mahsulot savatdan o'chirildi")
+        toast({
+          title: "Muvaffaqiyat",
+          description: "Mahsulot savatdan o'chirildi",
+        })
         setDeleteModal({ isOpen: false, cartId: "", productId: "" })
         loadCartItems()
       } else {
-        toast.error("Mahsulotni o'chirishda xatolik yuz berdi")
+        toast({
+          variant: "destructive",
+          title: "Xatolik",
+          description:"Mahsulotni o'chirishda xatolik yuz berdi",
+        })
       }
     } catch (error) {
       console.error("Error deleting cart item:", error)
-      toast.error("Mahsulotni o'chirishda xatolik yuz berdi")
+      toast({
+        variant: "destructive",
+        title: "Xatolik",
+        description: "Mahsulotni o'chirishda xatolik yuz berdi",
+      })
     }
   }
   const handleCreateOrder = async () => {
     // Validation
     if (!deliveryDate || !deliveryAddress || !selectedClientId || sum <= 0) {
-      toast.error("Barcha majburiy maydonlarni to'ldiring")
+      toast({
+        variant: "destructive",
+        title: "Xatolik",
+        description: "Barcha majburiy maydonlarni to'ldiring",
+      })
       return
     }
 
@@ -343,7 +386,10 @@ export default function CartPage() {
       })
 
       if (response.success.is) {
-        toast.success("Buyurtma muvaffaqiyatli yaratildi")
+        toast({
+          title: "Muvaffaqiyat",
+          description: "Buyurtma muvaffaqiyatli yaratildi",
+        })
 
         // Reset form
         setIsOrderModalOpen(false)
@@ -359,11 +405,19 @@ export default function CartPage() {
         // Reload cart items
         loadCartItems()
       } else {
-        toast.error("Buyurtma yaratishda xatolik yuz berdi")
+        toast({
+          variant: "destructive",
+          title: "Xatolik",
+          description: "Buyurtma yaratishda xatolik yuz berdi",
+        })
       }
     } catch (error) {
       console.error("Create order error:", error)
-      toast.error("Buyurtma yaratishda xatolik yuz berdi")
+      toast({
+        variant: "destructive",
+        title: "Xatolik",
+        description: "Buyurtma yaratishda xatolik yuz berdi",
+      })
     } finally {
       setIsCreatingOrder(false)
     }
@@ -565,6 +619,7 @@ export default function CartPage() {
                   onChange={(e) =>
                     setEditForm((prev) => ({
                       ...prev,
+                      totalSum: String(Number(e.target.value || 1) * Number(prev.priceWithSale)), 
                       quantity: Number.parseInt(e.target.value) || 1,
                     }))
                   }
@@ -578,6 +633,7 @@ export default function CartPage() {
                   min="0"
                   max="100"
                   value={editForm.sale}
+                  disabled={true}
                   onChange={(e) =>
                     setEditForm((prev) => ({
                       ...prev,
@@ -597,7 +653,8 @@ export default function CartPage() {
                   onChange={(e) =>
                     setEditForm((prev) => ({
                       ...prev,
-                      price: e.target.value,
+                      sale: (((Number(e.target.value) - Number(prev.priceWithSale))/Number(e.target.value))*100) || 0,
+                      price: e.target.value || '0',
                     }))
                   }
                 />
@@ -610,7 +667,9 @@ export default function CartPage() {
                   onChange={(e) =>
                     setEditForm((prev) => ({
                       ...prev,
-                      priceWithSale: e.target.value,
+                      sale: (((Number(prev.price) - Number(e.target.value)) / Number(prev.price)) * 100) || 0,
+                      totalSum: String(Number(prev.quantity || 1) * Number(e.target.value)), 
+                      priceWithSale: e.target.value || '0',
                     }))
                   }
                 />
@@ -621,6 +680,7 @@ export default function CartPage() {
               <Label htmlFor="totalSum">Jami summa</Label>
               <Input
                 id="totalSum"
+                disabled={true}
                 value={editForm.totalSum}
                 onChange={(e) =>
                   setEditForm((prev) => ({

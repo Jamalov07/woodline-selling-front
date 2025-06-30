@@ -279,11 +279,12 @@ export default function BookingPage() {
       })
 
       if (cartResponse.success.is) {
+        toast.success("Mahsulot savatga joylashtirildi")
         // Savatga qo'shildi, endi bookingni o'chiramiz
         const deleteResponse = await apiService.deleteBooking(booking.id)
 
         if (deleteResponse.success.is) {
-          toast.success("Mahsulot savatga joylashtirildi")
+          toast.success("Mahsulot muvaffaqiyatli o'chirildi")
           fetchMyBookings(bookingsCurrentPage)
         } else {
           toast.error("Bookingni o'chirishda xatolik yuz berdi")
@@ -351,7 +352,7 @@ export default function BookingPage() {
               ) : (
                 <>
                   <div className="rounded-md border">
-                    <Table>
+                    <Table className="table-with-borders">
                       <TableHeader>
                         <TableRow>
                           <TableHead className="w-16">№</TableHead>
@@ -499,7 +500,7 @@ export default function BookingPage() {
               ) : (
                 <>
                   <div className="rounded-md border">
-                    <Table>
+                    <Table className="table-with-borders">
                       <TableHeader>
                         <TableRow>
                           <TableHead className="w-16">№</TableHead>

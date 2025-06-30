@@ -180,6 +180,11 @@ interface StorehouseProductStatus {
     id: string
     quantity: number
     sellerId: string
+    seller:{
+      id: string
+      phone: string
+      fullname: string
+    }
   }>
   orderProducts?: Array<{
     id: string
@@ -859,7 +864,7 @@ class ApiService {
 
   // Cart methods
   async createCart(data: {
-    spsId: string
+    spsId?: string
     quantity: number
     description: string
     sale: number

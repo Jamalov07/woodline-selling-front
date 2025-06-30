@@ -140,7 +140,7 @@ export default function MyOrdersPage() {
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
-                <Table>
+                <Table className="table-with-borders">
                   <TableHeader>
                     <TableRow>
                       <TableHead className="w-16">№</TableHead>
