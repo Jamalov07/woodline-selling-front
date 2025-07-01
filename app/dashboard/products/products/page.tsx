@@ -475,7 +475,6 @@ export default function ProductsPage() {
       </Card>
 
       {/* Pagination */}
-      {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <div className="text-sm text-muted-foreground">
             Jami {totalCount} ta mahsulot, {totalPages} sahifa
@@ -514,7 +513,6 @@ export default function ProductsPage() {
             </Button>
           </div>
         </div>
-      )}
 
       {/* Create Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>

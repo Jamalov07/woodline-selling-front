@@ -333,6 +333,7 @@ export default function BookingPage() {
           <TabsTrigger value="available">Omborda bor mahsulotlar</TabsTrigger>
         </TabsList>
 
+        {/* Book qilingan mahsulotlar */}
         <TabsContent value="booked" className="space-y-4">
           <Card>
             <CardHeader>
@@ -417,7 +418,6 @@ export default function BookingPage() {
                     </Table>
                   </div>
 
-                  {bookingsTotalPages > 1 && (
                     <div className="flex justify-center mt-6">
                       <Pagination>
                         <PaginationContent>
@@ -473,13 +473,13 @@ export default function BookingPage() {
                         </PaginationContent>
                       </Pagination>
                     </div>
-                  )}
                 </>
               )}
             </CardContent>
           </Card>
         </TabsContent>
 
+        {/* Omborda bor mahsulotlar */}
         <TabsContent value="available" className="space-y-4">
           <Card>
             <CardHeader>
@@ -586,7 +586,7 @@ export default function BookingPage() {
                     </Table>
                   </div>
 
-                  {totalPages > 1 && (
+                  {/* pagination */}
                     <div className="flex justify-center mt-6">
                       <Pagination>
                         <PaginationContent>
@@ -639,7 +639,6 @@ export default function BookingPage() {
                         </PaginationContent>
                       </Pagination>
                     </div>
-                  )}
                 </>
               )}
             </CardContent>

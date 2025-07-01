@@ -224,7 +224,6 @@ export default function MyOrdersPage() {
             </CardContent>
           </Card>
 
-          {totalPages > 1 && (
             <div className="flex justify-center">
               <Pagination>
                 <PaginationContent>
@@ -277,7 +276,6 @@ export default function MyOrdersPage() {
                 </PaginationContent>
               </Pagination>
             </div>
-          )}
         </>
       )}
     </div>
